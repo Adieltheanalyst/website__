@@ -116,7 +116,7 @@ WORK = [
         "status": "upcoming",
         "description":"Join us for the July 2026 Edition of the BuildIT Investor Meet & Greet for an exclusive morning of high-impact networking, visionary pitches, and ecosystem building.",
         "rsvp_link": "https://luma.com/ga1gls29",
-        "poster": "WhatsApp Image 2026-06-27 at 11.01.59 PM.jpeg",
+        "poster": "investors_meet_&_greet.jpeg",
         "gallery_link": "",
         "members_only_gallery": False,
 
