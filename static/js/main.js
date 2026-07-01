@@ -45,3 +45,25 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.1 });
 
 document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Work section filter tabs
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.work-card').forEach(card => {
+      const show = filter === 'all' || card.dataset.type === filter;
+      card.style.display = show ? '' : 'none';
+    });
+  });
+});
+
+// Auto-hide flash messages after 6s
+setTimeout(() => {
+  document.querySelectorAll('.flash').forEach(f => {
+    f.style.transition = 'opacity 0.5s';
+    f.style.opacity = '0';
+    setTimeout(() => f.remove(), 500);
+  });
+}, 6000);
