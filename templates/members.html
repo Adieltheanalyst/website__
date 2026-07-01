@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Members — {{ site.name }}{% endblock %}
+{% block content %}
+<div class="members-wrap">
+  <div class="inner">
+    <div class="members-header fade-in">
+      <span class="eyebrow">Member Space</span>
+      <h1 class="section-title">Hey, {{ member.name.split()[0] }} 👋</h1>
+      <p class="section-sub">Welcome to the BuildIT member hub. Everything below is members only.</p>
+    </div>
+
+    <div class="members-grid">
+      <!-- Quick links -->
+      <div class="mcard fade-in">
+        <div class="mcard-icon">💬</div>
+        <h3>Community Chat</h3>
+        <p>Join the group to stay plugged into what's happening, project updates, and random good links.</p>
+        <a href="https://chat.whatsapp.com/YOUR_LINK" target="_blank" class="btn-sm primary">Join WhatsApp Group</a>
+      </div>
+
+      <div class="mcard fade-in">
+        <div class="mcard-icon">📅</div>
+        <h3>Upcoming: Patent or Perish?</h3>
+        <p>Our next event is coming soon. Make sure you're signed up so you don't miss the RSVP window.</p>
+        <a href="{{ site.join_form }}" target="_blank" class="btn-sm primary">Stay updated →</a>
+      </div>
+
+      <div class="mcard fade-in">
+        <div class="mcard-icon">📰</div>
+        <h3>Journal</h3>
+        <p>All 8 articles are live on Substack. Subscribe to get new ones straight to your inbox.</p>
+        <a href="{{ site.socials.substack }}" target="_blank" class="btn-sm primary">Read on Substack →</a>
+      </div>
+
+      <div class="mcard fade-in">
+        <div class="mcard-icon">🔑</div>
+        <h3>Account</h3>
+        <p>Member since {{ member.joined_at[:10] }}. You can update your password anytime.</p>
+        <a href="/set-password" class="btn-sm ghost">Change password</a>
+      </div>
+    </div>
+
+    <!-- Event galleries -->
+    {% if past_events %}
+    <div style="margin-top:3rem;" class="fade-in">
+      <span class="eyebrow">Event Galleries</span>
+      <h2 class="section-title" style="font-size:1.6rem;">Past event photos</h2>
+      <div class="gallery-cards">
+        {% for event in past_events %}
+        <div class="gallery-card">
+          {% if event.poster %}
+          <img src="{{ url_for('static', filename='images/' + event.poster) }}" alt="{{ event.title }}"/>
+          {% endif %}
+          <div class="gallery-card-body">
+            <h4>{{ event.title }}</h4>
+            <p>{{ event.date }} · {{ event.location }}</p>
+            {% if event.gallery_link %}
+            <a href="{{ event.gallery_link }}" target="_blank" class="btn-sm primary" style="margin-top:0.8rem;">
+              📸 Open Full Gallery (Google Drive)
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+      <a href="/logout" style="color:var(--muted);font-size:0.85rem;text-decoration:none;">← Log out</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
