@@ -4,96 +4,108 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}{{ site.name }}{% endblock %}</title>
-  <meta name="description" content="{{ site.description }}"/>
   <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
   {% block extra_head %}{% endblock %}
 </head>
 <body>
 
-<!-- ── NAV ── -->
 <nav id="navbar">
   <a href="/" class="logo">
-    <svg class="logo-cube" width="30" height="26" viewBox="0 0 60 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- top cube -->
-      <polygon points="20,0 30,5.5 20,11 10,5.5" fill="none" stroke="#FDFDFD" stroke-width="2.2"/>
-      <polygon points="20,11 30,5.5 30,17 20,22.5" fill="none" stroke="#FDFDFD" stroke-width="2.2"/>
-      <polygon points="20,11 10,5.5 10,17 20,22.5" fill="none" stroke="#FDFDFD" stroke-width="2.2"/>
-      <!-- bottom-left cube -->
-      <polygon points="10,22.5 20,17 20,28 10,33.5" fill="none" stroke="#FDFDFD" stroke-width="2.2"/>
-      <polygon points="20,28 20,17 30,22.5 30,33.5" fill="none" stroke="#FDFDFD" stroke-width="2.2"/>
-      <polygon points="10,22.5 0,17 0,28 10,33.5" fill="none" stroke="#FDFDFD" stroke-width="2.2"/>
-      <polygon points="10,17 20,11 10,5.5 0,11" fill="none" stroke="#FDFDFD" stroke-width="2.2"/>
-      <!-- bottom-right cube -->
-      <polygon points="30,22.5 40,17 40,28 30,33.5" fill="none" stroke="#FDFDFD" stroke-width="2.2"/>
-      <polygon points="40,28 40,17 50,22.5 50,33.5" fill="none" stroke="#FDFDFD" stroke-width="2.2"/>
-      <polygon points="30,22.5 20,17 30,11 40,17" fill="none" stroke="#FDFDFD" stroke-width="2.2"/>
+    <svg width="30" height="26" viewBox="0 0 60 44" fill="none">
+      <polygon points="20,0 30,6 20,12 10,6" fill="none" stroke="#FDFDFD" stroke-width="2"/>
+      <polygon points="20,12 30,6 30,18 20,24" fill="none" stroke="#FDFDFD" stroke-width="2"/>
+      <polygon points="20,12 10,6 10,18 20,24" fill="none" stroke="#FDFDFD" stroke-width="2"/>
+      <polygon points="10,24 20,18 20,30 10,36" fill="none" stroke="#FDFDFD" stroke-width="2"/>
+      <polygon points="20,30 20,18 30,24 30,36" fill="none" stroke="#FDFDFD" stroke-width="2"/>
+      <polygon points="10,24 0,18 0,30 10,36" fill="none" stroke="#FDFDFD" stroke-width="2"/>
+      <polygon points="10,18 20,12 10,6 0,12" fill="none" stroke="#FDFDFD" stroke-width="2"/>
+      <polygon points="30,24 40,18 40,30 30,36" fill="none" stroke="#FDFDFD" stroke-width="2"/>
+      <polygon points="40,30 40,18 50,24 50,36" fill="none" stroke="#FDFDFD" stroke-width="2"/>
+      <polygon points="30,24 20,18 30,12 40,18" fill="none" stroke="#FDFDFD" stroke-width="2"/>
     </svg>
-    <div class="logo-text">
-      BuildIT<span>Connective</span>
-    </div>
+    <div class="logo-text">BuildIT<span>Connective</span></div>
   </a>
 
-  <button class="hamburger" id="hamburger" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
 
   <ul class="nav-links" id="nav-links">
     <li><a href="/#about">About</a></li>
-    <li><a href="/#events">Events</a></li>
-    <li><a href="/#projects">Projects</a></li>
+    <li><a href="/#work">Work</a></li>
     <li><a href="/#journal">Journal</a></li>
-    <li><a href="/#members">Members</a></li>
+    <li><a href="/#socials">Connect</a></li>
+    {% if member %}
+    <li><a href="/members" class="nav-member-link">🔐 Members</a></li>
+    {% endif %}
   </ul>
-  <a href="{{ site.join_form }}" target="_blank" class="nav-cta">Join us →</a>
+
+  <div class="nav-right">
+    {% if member %}
+      <span class="nav-greeting">Hey, {{ member.name.split()[0] }} 👋</span>
+      {% if member.role == 'admin' %}
+        <a href="/admin" class="nav-cta admin">Admin</a>
+      {% endif %}
+      <a href="/logout" class="nav-ghost">Log out</a>
+    {% else %}
+      <a href="/login"  class="nav-ghost">Log in</a>
+      <a href="{{ site.join_form }}" target="_blank" class="nav-cta">Join us →</a>
+    {% endif %}
+  </div>
 </nav>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-container">
+    {% for category, message in messages %}
+    <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
 
 {% block content %}{% endblock %}
 
-<!-- ── FOOTER ── -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <a href="/" class="logo footer-logo">
-        <svg width="24" height="20" viewBox="0 0 60 52" fill="none">
-          <polygon points="20,0 30,5.5 20,11 10,5.5" fill="none" stroke="#8BEEE0" stroke-width="2.2"/>
-          <polygon points="20,11 30,5.5 30,17 20,22.5" fill="none" stroke="#8BEEE0" stroke-width="2.2"/>
-          <polygon points="20,11 10,5.5 10,17 20,22.5" fill="none" stroke="#8BEEE0" stroke-width="2.2"/>
-          <polygon points="10,22.5 20,17 20,28 10,33.5" fill="none" stroke="#8BEEE0" stroke-width="2.2"/>
-          <polygon points="20,28 20,17 30,22.5 30,33.5" fill="none" stroke="#8BEEE0" stroke-width="2.2"/>
-          <polygon points="10,22.5 0,17 0,28 10,33.5" fill="none" stroke="#8BEEE0" stroke-width="2.2"/>
-          <polygon points="10,17 20,11 10,5.5 0,11" fill="none" stroke="#8BEEE0" stroke-width="2.2"/>
-          <polygon points="30,22.5 40,17 40,28 30,33.5" fill="none" stroke="#8BEEE0" stroke-width="2.2"/>
-          <polygon points="40,28 40,17 50,22.5 50,33.5" fill="none" stroke="#8BEEE0" stroke-width="2.2"/>
-          <polygon points="30,22.5 20,17 30,11 40,17" fill="none" stroke="#8BEEE0" stroke-width="2.2"/>
+      <div class="logo" style="margin-bottom:0.8rem;">
+        <svg width="24" height="20" viewBox="0 0 60 44" fill="none">
+          <polygon points="20,0 30,6 20,12 10,6" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+          <polygon points="20,12 30,6 30,18 20,24" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+          <polygon points="20,12 10,6 10,18 20,24" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+          <polygon points="10,24 20,18 20,30 10,36" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+          <polygon points="20,30 20,18 30,24 30,36" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+          <polygon points="10,24 0,18 0,30 10,36" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+          <polygon points="10,18 20,12 10,6 0,12" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+          <polygon points="30,24 40,18 40,30 30,36" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+          <polygon points="40,30 40,18 50,24 50,36" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+          <polygon points="30,24 20,18 30,12 40,18" fill="none" stroke="#8BEEE0" stroke-width="2"/>
         </svg>
         <div class="logo-text">BuildIT<span>Connective</span></div>
-      </a>
+      </div>
       <p>Building a modern technology community<br>that is bold, confident execution.</p>
-      <p style="margin-top:0.4rem; font-size:0.78rem;">{{ site.location }} · <a href="mailto:{{ site.email }}" style="color:var(--mint);">{{ site.email }}</a></p>
+      <p style="margin-top:0.4rem;font-size:0.78rem;">{{ site.location }} · <a href="mailto:{{ site.email }}" style="color:var(--mint)">{{ site.email }}</a></p>
     </div>
     <div class="footer-links">
       <div class="footer-col">
         <h4>Community</h4>
         <a href="/#about">About</a>
-        <a href="/#events">Events</a>
-        <a href="/#projects">Projects</a>
+        <a href="/#work">Work & Events</a>
         <a href="/#journal">Journal</a>
-        <a href="/#members">Members</a>
         <a href="{{ site.join_form }}" target="_blank">Join Us</a>
+        <a href="/login">Member Login</a>
       </div>
       <div class="footer-col">
         <h4>Follow us</h4>
-        <a href="{{ site.socials.substack }}" target="_blank">Substack</a>
-        <a href="{{ site.socials.twitter }}" target="_blank">Twitter / X</a>
+        <a href="{{ site.socials.substack }}"  target="_blank">Substack</a>
+        <a href="{{ site.socials.twitter }}"   target="_blank">Twitter / X</a>
         <a href="{{ site.socials.instagram }}" target="_blank">Instagram</a>
-        <a href="{{ site.socials.linkedin }}" target="_blank">LinkedIn</a>
+        <a href="{{ site.socials.linkedin }}"  target="_blank">LinkedIn</a>
       </div>
     </div>
   </div>
-  <div class="footer-bottom">
-    <span>© 2025 BuildIT Connective. Made by the community, for the community.</span>
-  </div>
+  <div class="footer-bottom">© 2025 BuildIT Connective. Made by the community, for the community.</div>
 </footer>
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
