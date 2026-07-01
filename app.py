@@ -91,48 +91,48 @@ PROJECTS = [
         "reviewer": "Client (identity withheld by request)",
         "tags": ["Web App", "Operations", "F&B"],
     },
-    {
-        "title": "NGO Volunteer Management Portal",
-        "status": "delivered",
-        "anonymous": False,
-        "description": (
-            "Web portal for a non-profit to coordinate volunteers across multiple programs — "
-            "shift booking, reporting, and messaging in one place."
-        ),
-        "team": ["@David N.", "@Esther W."],
-        "review": (
-            "This cut our coordination time in half. "
-            "The BuildIT team understood our constraints and worked with us."
-        ),
-        "reviewer": "Programs Director, NGO",
-        "tags": ["Portal", "Non-Profit", "Web"],
-    },
-    {
-        "title": "Confidential Fintech Project",
-        "status": "delivered",
-        "anonymous": True,
-        "description": (
-            "A fintech-adjacent product for a client who requested full NDA coverage. "
-            "Involved secure data handling and a mobile-first interface."
-        ),
-        "team": [],
-        "review": "Professionalism from start to finish. Would absolutely engage this team again.",
-        "reviewer": "Client (identity withheld per NDA)",
-        "tags": ["Fintech", "Mobile", "NDA"],
-    },
-    {
-        "title": "Community Events Platform",
-        "status": "in-progress",
-        "anonymous": False,
-        "description": (
-            "An internal BuildIT project — building our own events management system "
-            "so we can move off Google Forms. Open to members who want to contribute."
-        ),
-        "team": ["@Felix A.", "@Grace T."],
-        "review": "Member project — ping us in the channel if you want to contribute.",
-        "reviewer": "BuildIT Team",
-        "tags": ["Internal", "Open to Contributors"],
-    },
+    # {
+    #     "title": "NGO Volunteer Management Portal",
+    #     "status": "delivered",
+    #     "anonymous": False,
+    #     "description": (
+    #         "Web portal for a non-profit to coordinate volunteers across multiple programs — "
+    #         "shift booking, reporting, and messaging in one place."
+    #     ),
+    #     "team": ["@David N.", "@Esther W."],
+    #     "review": (
+    #         "This cut our coordination time in half. "
+    #         "The BuildIT team understood our constraints and worked with us."
+    #     ),
+    #     "reviewer": "Programs Director, NGO",
+    #     "tags": ["Portal", "Non-Profit", "Web"],
+    # },
+    # {
+    #     "title": "Confidential Fintech Project",
+    #     "status": "delivered",
+    #     "anonymous": True,
+    #     "description": (
+    #         "A fintech-adjacent product for a client who requested full NDA coverage. "
+    #         "Involved secure data handling and a mobile-first interface."
+    #     ),
+    #     "team": [],
+    #     "review": "Professionalism from start to finish. Would absolutely engage this team again.",
+    #     "reviewer": "Client (identity withheld per NDA)",
+    #     "tags": ["Fintech", "Mobile", "NDA"],
+    # },
+    # {
+    #     "title": "Community Events Platform",
+    #     "status": "in-progress",
+    #     "anonymous": False,
+    #     "description": (
+    #         "An internal BuildIT project — building our own events management system "
+    #         "so we can move off Google Forms. Open to members who want to contribute."
+    #     ),
+    #     "team": ["@Felix A.", "@Grace T."],
+    #     "review": "Member project — ping us in the channel if you want to contribute.",
+    #     "reviewer": "BuildIT Team",
+    #     "tags": ["Internal", "Open to Contributors"],
+    # },
 ]
 
 JOURNAL = [
@@ -143,7 +143,7 @@ JOURNAL = [
             "Before you ship, before you pitch, before you partner — "
             "here's the IP conversation nobody's having in the Nairobi tech scene."
         ),
-        "link": "https://substack.com/@builditconnective",
+        "link": "https://builditconnective.substack.com/p/buildit-community-update-the-ip-reality?r=5f1xh1",
         "date": "Coming Soon",
     },
     {
