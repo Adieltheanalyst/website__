@@ -106,6 +106,22 @@ JOURNAL = [
 WORK = [
     # ── EVENTS ──
     {
+        "type": "event",
+        "id": "investor-meet-greet-july-2026",
+        "title": "Investor Meet & Greet",
+        "subtitle": "July Edition, 2026",
+        "date": "15th Huly 2026",
+        "time": "9:00 AM - 12:00 PM",
+        "location": "ALX, The Piano. Brookside Drive",
+        "status": "upcoming",
+        "description":"Join us for the July 2026 Edition of the BuildIT Investor Meet & Greet for an exclusive morning of high-impact networking, visionary pitches, and ecosystem building.",
+        "rsvp_link": "https://luma.com/ga1gls29",
+        "poster": "WhatsApp Image 2026-06-27 at 11.01.59 PM.jpeg",
+        "gallery_link": "",
+        "members_only_gallery": False,
+
+    },
+    {
         "type":      "event",
         "id":        "patent-or-perish",
         "title":     "Patent or Perish?",
