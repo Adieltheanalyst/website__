@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Log in — {{ site.name }}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg width="36" height="30" viewBox="0 0 60 44" fill="none">
+        <polygon points="20,0 30,6 20,12 10,6" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+        <polygon points="20,12 30,6 30,18 20,24" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+        <polygon points="20,12 10,6 10,18 20,24" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+        <polygon points="10,24 20,18 20,30 10,36" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+        <polygon points="20,30 20,18 30,24 30,36" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+        <polygon points="10,24 0,18 0,30 10,36" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+        <polygon points="10,18 20,12 10,6 0,12" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+        <polygon points="30,24 40,18 40,30 30,36" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+        <polygon points="40,30 40,18 50,24 50,36" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+        <polygon points="30,24 20,18 30,12 40,18" fill="none" stroke="#8BEEE0" stroke-width="2"/>
+      </svg>
+    </div>
+    <h2>Welcome back</h2>
+    <p class="auth-sub">Log in to your BuildIT member account</p>
+    <form method="POST">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="you@example.com" required autofocus/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="••••••••" required/>
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%;margin-top:0.5rem;">Log in →</button>
+    </form>
+    <div class="auth-links">
+      <span>Not a member yet?</span>
+      <a href="{{ site.join_form }}" target="_blank">Apply to join →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
