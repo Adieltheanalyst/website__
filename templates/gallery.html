@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }} Gallery — {{ site.name }}{% endblock %}
+{% block content %}
+<div class="gallery-wrap">
+  <div class="inner">
+    <div style="margin-bottom:2rem;" class="fade-in">
+      <a href="/#work" style="color:var(--mint);font-size:0.85rem;text-decoration:none;">← Back to Work & Events</a>
+    </div>
+    <div class="fade-in">
+      <span class="eyebrow">Members Only · Event Gallery</span>
+      <h1 class="section-title">{{ event.title }}</h1>
+      <p class="section-sub">{{ event.date }} · {{ event.location }}</p>
+    </div>
+    <div style="margin-top:2.5rem;" class="fade-in">
+      {% if event.gallery_link %}
+      <div class="gallery-embed-card">
+        <div class="gallery-embed-icon">📸</div>
+        <h3>Photos from {{ event.title }}</h3>
+        <p>The full photo gallery is hosted on Google Drive. Click below to view all photos from the event.</p>
+        <a href="{{ event.gallery_link }}" target="_blank" class="btn-primary" style="margin-top:1rem;">
+          Open Gallery in Google Drive →
+        </a>
+      </div>
+      {% else %}
+      <div class="gallery-embed-card">
+        <div class="gallery-embed-icon">🕐</div>
+        <h3>Gallery coming soon</h3>
+        <p>Photos from this event will be uploaded shortly. Check back soon!</p>
+      </div>
+      {% endif %}
+    </div>
+    <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+      <a href="/members" style="color:var(--muted);font-size:0.85rem;text-decoration:none;">← Back to member space</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
