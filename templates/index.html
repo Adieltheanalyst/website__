@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+{% block title %}{{ site.name }} — Building Nairobi's Tech Community{% endblock %}
+
+{% block content %}
+
+<!-- ── TICKER ── -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    {% for item in ticker %}
+    <span class="ticker-item">{{ item }}</span>
+    {% endfor %}
+    {# Duplicate for seamless loop #}
+    {% for item in ticker %}
+    <span class="ticker-item">{{ item }}</span>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ── HERO ── -->
+<div class="hero-wrap">
+  <div class="hero">
+    <div class="fade-in">
+      <div class="hero-eyebrow">
+        <div class="pulse-dot"></div>
+        Tech Community · Nairobi & Beyond
+      </div>
+      <h1>We don't just<br>talk tech.<br>We <span class="accent">build</span> it.</h1>
+      <p class="hero-desc">{{ site.description }}</p>
+      <div class="hero-actions">
+        <a href="{{ site.join_form }}" target="_blank" class="btn-primary">Join the community</a>
+        <a href="#projects" class="btn-ghost">See our work</a>
+      </div>
+    </div>
+    <div class="hero-stats fade-in">
+      <div class="stat-card">
+        <div class="stat-label">Members</div>
+        <div class="stat-value mint">{{ site.stats.members }}</div>
+        <div class="stat-sub">and growing</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Projects Shipped</div>
+        <div class="stat-value">{{ site.stats.projects }}</div>
+        <div class="stat-sub">this year</div>
+      </div>
+      <div class="stat-card wide">
+        {% if next_event %}
+        <div class="next-event">
+          <div>
+            <div class="stat-label">Next Event</div>
+            <div class="next-title">{{ next_event.title }}</div>
+            <div class="next-meta">📍 {{ next_event.date }} · {{ next_event.location }}</div>
+          </div>
+          <span class="pill soon">Coming Soon</span>
+        </div>
+        {% else %}
+        <div class="next-event">
+          <div>
+            <div class="stat-label">Community</div>
+            <div class="next-title">Always building</div>
+            <div class="next-meta">📍 {{ site.location }}</div>
+          </div>
+          <span class="pill soon">Active</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ABOUT ── -->
+<section class="about" id="about">
+  <div class="inner">
+    <div class="about-grid">
+      <div class="fade-in">
+        <span class="eyebrow">Who we are</span>
+        <h2 class="section-title">Built by builders,<br>for builders.</h2>
+        <p class="section-sub">No gatekeeping. No lectures. Just people who want to make things and learn along the way.</p>
+      </div>
+      <div class="about-body fade-in">
+        <p>BuildIT Connective started as a small group who wanted to <strong>stop consuming and start creating</strong>. We come from different stacks — designers, backend engineers, frontend devs, data folks, product thinkers — and we build real things together.</p>
+        <p>We hold regular build nights, take on client work as a community, publish our thoughts in our journal, and keep members plugged in through our private space.</p>
+        <div class="pillars">
+          {% for v in values %}
+          <div class="pillar">
+            <div class="pillar-icon">{{ v.icon }}</div>
+            <h4>{{ v.title }}</h4>
+            <p>{{ v.body }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ── EVENTS ── -->
+<section class="events" id="events">
+  <div class="inner">
+    <div class="sh fade-in">
+      <span class="eyebrow">Events</span>
+      <h2 class="section-title">Where the building happens</h2>
+      <p class="section-sub">From focused build nights to community showcases — something's always on the calendar.</p>
+    </div>
+    <div class="events-grid">
+      {% for event in events %}
+      <div class="ecard fade-in">
+        <div class="ecard-poster">
+          {% if event.poster %}
+          <img src="{{ url_for('static', filename='images/' + event.poster) }}"
+               alt="{{ event.title }} poster" loading="lazy"/>
+          {% else %}
+          <div class="no-poster">🗓️</div>
+          {% endif %}
+        </div>
+        <div class="ecard-body">
+          <div class="ecard-date">
+            {% if event.status == 'upcoming' %}
+            <span class="pill soon">Coming Soon</span>
+            {% else %}
+            <span class="pill past">Past Event</span>
+            {% endif %}
+            {{ event.date }}{% if event.time %} · {{ event.time }}{% endif %}
+          </div>
+          <h3>{{ event.title }}</h3>
+          {% if event.subtitle %}<div class="ecard-sub">{{ event.subtitle }}</div>{% endif %}
+          <div class="ecard-meta">📍 {{ event.location }}</div>
+          <p>{{ event.description }}</p>
+          <div class="ecard-actions">
+            {% if event.status == 'upcoming' and event.rsvp_link %}
+            <a href="{{ event.rsvp_link }}" target="_blank" class="btn-sm primary">RSVP Now →</a>
+            {% endif %}
+            {% if event.gallery_link %}
+            <a href="{{ event.gallery_link }}" target="_blank" class="btn-sm ghost">📸 View Gallery</a>
+            {% endif %}
+            {% if event.status == 'past' and not event.gallery_link %}
+            <a href="#members" class="btn-sm ghost">Gallery (members only)</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="margin-top:2.5rem; text-align:center;">
+      <a href="{{ site.join_form }}" target="_blank" class="btn-primary">Join to get event updates →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ── PROJECTS ── -->
+<section class="projects" id="projects">
+  <div class="inner">
+    <div class="sh fade-in">
+      <span class="eyebrow">Projects</span>
+      <h2 class="section-title">Real work, real impact</h2>
+      <p class="section-sub">We take on client projects as a community. Some are public — some kept confidential by request.</p>
+    </div>
+    <div class="projects-grid">
+      {% for p in projects %}
+      <div class="pcard fade-in">
+        <div class="pcard-header">
+          <h3>{{ p.title }}</h3>
+          {% if p.anonymous %}
+          <span class="badge anon">🔒 Anonymous</span>
+          {% elif p.status == 'delivered' %}
+          <span class="badge delivered">Delivered</span>
+          {% elif p.status == 'in-progress' %}
+          <span class="badge in-progress">In Progress</span>
+          {% endif %}
+        </div>
+        <p class="pcard-desc">{{ p.description }}</p>
+        {% if p.tags %}
+        <div class="tags">
+          {% for t in p.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        {% if p.team %}
+        <div class="team-chips">
+          {% for m in p.team %}<span class="chip">{{ m }}</span>{% endfor %}
+        </div>
+        {% elif p.anonymous %}
+        <div class="team-chips"><span class="chip">Team Anonymous</span></div>
+        {% endif %}
+        {% if p.review %}
+        <div class="review">
+          {{ p.review }}
+          <span class="review-author">— {{ p.reviewer }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <div style="margin-top:2.5rem; text-align:center;">
+      <a href="{{ site.join_form }}" target="_blank" class="btn-ghost">Want to work with us? Join first →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ── JOURNAL ── -->
+<section class="journal" id="journal">
+  <div class="inner">
+    <div class="sh fade-in">
+      <span class="eyebrow">Journal</span>
+      <h2 class="section-title">Thoughts from the community</h2>
+      <p class="section-sub">We write about what we're learning, building, and thinking — published on Substack, free for everyone.</p>
+    </div>
+    <div class="journal-grid">
+      {% for j in journal %}
+      <div class="jcard fade-in">
+        <div class="jissue">{{ j.issue }}</div>
+        <h3>{{ j.title }}</h3>
+        <p>{{ j.excerpt }}</p>
+        <div class="jcard-footer">
+          <span class="jcard-date">{{ j.date }}</span>
+          <a href="{{ j.link }}" target="_blank">Read on Substack ↗</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="margin-top:2rem; text-align:center;">
+      <a href="{{ site.socials.substack }}" target="_blank" class="btn-ghost">All issues on Substack →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ── MEMBERS (locked) ── -->
+<section class="members" id="members">
+  <div class="inner">
+    <div class="sh fade-in" style="text-align:center;">
+      <span class="eyebrow">Member Space</span>
+      <h2 class="section-title">After-event recaps & gallery</h2>
+    </div>
+    <div class="members-lock fade-in">
+      <div class="lock-icon">🔐</div>
+      <h3>Members only</h3>
+      <p>Event photos, recordings, and post-event write-ups live here — available exclusively to BuildIT Connective members. Join the community to get access.</p>
+      <a href="{{ site.join_form }}" target="_blank" class="btn-primary">Join BuildIT →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ── SOCIALS ── -->
+<section class="socials" id="socials">
+  <div class="inner">
+    <div class="sh fade-in">
+      <span class="eyebrow">Find us</span>
+      <h2 class="section-title">We're online too</h2>
+    </div>
+    <div class="socials-grid">
+      <a href="{{ site.socials.substack }}" target="_blank" class="scard fade-in">
+        <div class="scard-icon">📰</div>
+        <div class="scard-name">Substack</div>
+        <div class="scard-handle">@builditconnective</div>
+      </a>
+      <a href="{{ site.socials.twitter }}" target="_blank" class="scard fade-in">
+        <div class="scard-icon">𝕏</div>
+        <div class="scard-name">Twitter / X</div>
+        <div class="scard-handle">@BuildITConn</div>
+      </a>
+      <a href="{{ site.socials.instagram }}" target="_blank" class="scard fade-in">
+        <div class="scard-icon">📸</div>
+        <div class="scard-name">Instagram</div>
+        <div class="scard-handle">@builditconn</div>
+      </a>
+      <a href="{{ site.socials.linkedin }}" target="_blank" class="scard fade-in">
+        <div class="scard-icon">💼</div>
+        <div class="scard-name">LinkedIn</div>
+        <div class="scard-handle">BuildIT Connective</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ── JOIN ── -->
+<section class="join" id="join">
+  <div class="inner fade-in">
+    <span class="eyebrow">Join us</span>
+    <h2 class="section-title">Ready to build<br>with us?</h2>
+    <p class="section-sub" style="margin:0 auto 0;">We're always open to people who want to contribute, learn, and grow with a community that takes building seriously.</p>
+    <div class="join-cards">
+      <div class="jjcard"><div class="ji">🛠️</div><h4>Get your hands dirty</h4><p>Join real projects — code, design, strategy. Whatever your superpower is.</p></div>
+      <div class="jjcard"><div class="ji">🧠</div><h4>Learn by doing</h4><p>Build Nights, workshops, and a community that shares what they know freely.</p></div>
+      <div class="jjcard"><div class="ji">🔒</div><h4>Access the member space</h4><p>Private gallery, event recaps, and internal projects channel.</p></div>
+      <div class="jjcard"><div class="ji">🌍</div><h4>Network that works</h4><p>Connect with builders across Nairobi and beyond doing interesting things.</p></div>
+    </div>
+    <a href="{{ site.join_form }}" target="_blank" class="btn-primary" style="font-size:1rem; padding:1rem 2.5rem;">
+      Apply to join (Google Form) →
+    </a>
+    <p class="join-note">Applications are reviewed by the team. We'll be in touch within a week.</p>
+  </div>
+</section>
+
+{% endblock %}
