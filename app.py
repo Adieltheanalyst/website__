@@ -7,7 +7,7 @@ Visit: http://localhost:5000
 Admin: http://localhost:5000/admin  (first run creates admin user)
 """
 
-import os, sqlite3, hashlib, secrets
+import os, sqlite3, hashlib, secrets, hmac
 from datetime import datetime
 from functools import wraps
 from flask import (Flask, render_template, request, redirect,
@@ -17,6 +17,13 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "buildit-change-this-in-production")
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "members.db")
+
+# ── Google Sheets webhook secret ──────────────────────────────────────────────
+# This is a shared secret between your Google Sheet and Flask.
+# Set the same value in both places. Change this to anything unique.
+# In production set it as an environment variable: WEBHOOK_SECRET=yourvalue
+WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "buildit-sheets-sync-2025")
+# ─────────────────────────────────────────────────────────────────────────────
 
 # ══════════════════════════════════════════════
 #  DATA — edit this section to update content
@@ -105,22 +112,6 @@ JOURNAL = [
 # ── Combined Projects + Events (Work section) ──
 WORK = [
     # ── EVENTS ──
-    {
-        "type": "event",
-        "id": "investor-meet-greet-july-2026",
-        "title": "Investor Meet & Greet",
-        "subtitle": "July Edition, 2026",
-        "date": "15th Huly 2026",
-        "time": "9:00 AM - 12:00 PM",
-        "location": "ALX, The Piano. Brookside Drive",
-        "status": "upcoming",
-        "description":"Join us for the July 2026 Edition of the BuildIT Investor Meet & Greet for an exclusive morning of high-impact networking, visionary pitches, and ecosystem building.",
-        "rsvp_link": "https://luma.com/ga1gls29",
-        "poster": "investors_meet_&_greet.jpeg",
-        "gallery_link": "",
-        "members_only_gallery": False,
-
-    },
     {
         "type":      "event",
         "id":        "patent-or-perish",
@@ -564,6 +555,169 @@ def register():
             )
             return redirect(url_for("index"))
     return render_template("register.html", site=SITE)
+
+
+# ══════════════════════════════════════════════
+#  GOOGLE SHEETS SYNC API
+# ══════════════════════════════════════════════
+#
+#  This endpoint is called automatically by a Google Apps Script
+#  whenever someone submits your Google Form.
+#  It creates a "pending" member in the database instantly —
+#  you then just click Approve in /admin.
+#
+#  SECURITY: Set SHEETS_WEBHOOK_SECRET in your environment,
+#  and paste the same value into the Apps Script below.
+#  This stops random people from hitting your endpoint.
+
+SHEETS_SECRET = os.environ.get("SHEETS_WEBHOOK_SECRET", "buildit-sheets-secret-change-me")
+
+@app.route("/api/form-submission", methods=["POST"])
+def form_submission():
+    """
+    Called by Google Apps Script when a new Google Form response arrives.
+    Expects JSON: { "secret": "...", "name": "...", "email": "...", "phone": "...", "about": "..." }
+    """
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({"ok": False, "error": "No JSON received"}), 400
+
+    # Verify secret token
+    if data.get("secret") != SHEETS_SECRET:
+        return jsonify({"ok": False, "error": "Unauthorized"}), 401
+
+    name  = (data.get("name")  or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    phone = (data.get("phone") or "").strip()
+    about = (data.get("about") or "").strip()   # "Tell us about yourself" field
+
+    if not name or not email:
+        return jsonify({"ok": False, "error": "Name and email are required"}), 400
+
+    # Build notes from extra fields
+    notes_parts = []
+    if phone: notes_parts.append(f"Phone: {phone}")
+    if about: notes_parts.append(f"About: {about}")
+    notes = " | ".join(notes_parts) if notes_parts else "Via Google Form"
+
+    db = get_db()
+
+    # Check if already exists
+    existing = db.execute("SELECT * FROM members WHERE email=?", (email,)).fetchone()
+    if existing:
+        return jsonify({
+            "ok": True,
+            "message": f"Email {email} already exists (status: {existing['status']})"
+        }), 200
+
+    # Insert as pending
+    db.execute("""
+        INSERT INTO members (name, email, password, status, notes)
+        VALUES (?, ?, ?, 'pending', ?)
+    """, (name, email, hash_password(secrets.token_urlsafe(16)), notes))
+    db.commit()
+
+    print(f"[FORM SYNC] New application from {name} <{email}>")
+    return jsonify({"ok": True, "message": f"Member {name} added as pending"}), 201
+
+
+@app.route("/api/sync-status", methods=["GET"])
+def sync_status():
+    """Quick health check — visit this URL to confirm your webhook is reachable."""
+    secret = request.args.get("secret", "")
+    if secret != SHEETS_SECRET:
+        return jsonify({"ok": False, "error": "Unauthorized"}), 401
+    db = get_db()
+    counts = db.execute("""
+        SELECT status, COUNT(*) as n FROM members GROUP BY status
+    """).fetchall()
+    return jsonify({
+        "ok": True,
+        "status": "BuildIT Connective API is running",
+        "members": {row["status"]: row["n"] for row in counts}
+    })
+
+
+# ══════════════════════════════════════════════
+#  GOOGLE SHEETS WEBHOOK
+# ══════════════════════════════════════════════
+
+@app.route("/api/new-member", methods=["POST"])
+def sheets_webhook():
+    """
+    Called automatically by Google Apps Script when someone submits the form.
+    Google Sheet sends JSON:  { "secret": "...", "name": "...", "email": "..." }
+    Flask saves them as pending → you approve in /admin.
+    """
+    data = request.get_json(silent=True)
+
+    # ── 1. Validate secret ──────────────────────────────────────────
+    if not data or data.get("secret") != WEBHOOK_SECRET:
+        return jsonify({"ok": False, "error": "Unauthorized"}), 401
+
+    # ── 2. Extract fields ───────────────────────────────────────────
+    name  = (data.get("name")  or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    phone = (data.get("phone") or "").strip()   # optional
+    role_applied = (data.get("role") or "").strip()  # e.g. "Designer", "Developer"
+    notes = f"Via Google Form. Role: {role_applied}. Phone: {phone}".strip(". ")
+
+    if not name or not email:
+        return jsonify({"ok": False, "error": "name and email are required"}), 400
+
+    # ── 3. Save to database ─────────────────────────────────────────
+    db = get_db()
+    existing = db.execute(
+        "SELECT id, status FROM members WHERE email=?", (email,)
+    ).fetchone()
+
+    if existing:
+        return jsonify({
+            "ok":     True,
+            "status": "already_exists",
+            "member_status": existing["status"],
+            "message": f"{email} is already in the database ({existing['status']})"
+        })
+
+    # Temp password — member will be asked to change it on first login
+    temp_pw = secrets.token_urlsafe(8)
+
+    db.execute("""
+        INSERT INTO members (name, email, password, role, status, notes)
+        VALUES (?, ?, ?, 'member', 'pending', ?)
+    """, (name, email, hash_password(temp_pw), notes))
+    db.commit()
+
+    print(f"[WEBHOOK] New member from Google Form: {name} <{email}>")
+
+    return jsonify({
+        "ok":      True,
+        "status":  "created",
+        "message": f"{name} added as pending. Approve at /admin",
+    }), 201
+
+
+@app.route("/api/status", methods=["GET"])
+def api_status():
+    """Health check — lets you confirm the server is reachable from Google Sheets."""
+    db = get_db()
+    counts = db.execute("""
+        SELECT
+            COUNT(*) as total,
+            SUM(CASE WHEN status='active'  THEN 1 ELSE 0 END) as active,
+            SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) as pending
+        FROM members
+    """).fetchone()
+    return jsonify({
+        "ok":      True,
+        "service": "BuildIT Connective",
+        "members": {
+            "total":   counts["total"],
+            "active":  counts["active"],
+            "pending": counts["pending"],
+        }
+    })
 
 
 # ══════════════════════════════════════════════
