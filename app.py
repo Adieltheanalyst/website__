@@ -113,6 +113,22 @@ JOURNAL = [
 WORK = [
     # ── EVENTS ──
     {
+        "type": "event",
+        "id": "investor-meet-greet-july-2026",
+        "title": "Investor Meet & Greet",
+        "subtitle": "July Edition, 2026",
+        "date": "15th July 2026",
+        "time": "9:00 AM - 12:00 PM",
+        "location": "ALX, The Piano. Brookside Drive",
+        "status": "upcoming",
+        "description":"Join us for the July 2026 Edition of the BuildIT Investor Meet & Greet for an exclusive morning of high-impact networking, visionary pitches, and ecosystem building.",
+        "rsvp_link": "https://luma.com/ga1gls29",
+        "poster": "investors_meet_&_greet.jpeg",
+        "gallery_link": "",
+        "members_only_gallery": False,
+
+    },
+    {
         "type":      "event",
         "id":        "patent-or-perish",
         "title":     "Patent or Perish?",
@@ -126,7 +142,7 @@ WORK = [
             "patents, trademarks, copyrights, and what actually matters "
             "when you're building. No legal jargon. Just real talk."
         ),
-        "rsvp_link":    "https://forms.gle/iQMFzdYPJQCtHoLv8",
+        # "rsvp_link":    "https://forms.gle/iQMFzdYPJQCtHoLv8",
         "poster":       "patent-or-perish.jpg",
         "gallery_link": "",
         "members_only_gallery": False,
@@ -166,50 +182,7 @@ WORK = [
         "review":   "The system completely transformed our operations. What used to take two staff members now runs itself.",
         "reviewer": "Client (identity withheld by request)",
         "tags":     ["Web App", "Operations", "F&B"],
-    },
-    {
-        "type":      "project",
-        "title":     "NGO Volunteer Management Portal",
-        "status":    "delivered",
-        "anonymous": False,
-        "description": (
-            "Web portal for a non-profit to coordinate volunteers across "
-            "multiple programs — shift booking, reporting, and messaging "
-            "in one place."
-        ),
-        "team":     ["@David N.", "@Esther W."],
-        "review":   "This cut our coordination time in half. The BuildIT team understood our constraints and worked with us.",
-        "reviewer": "Programs Director, NGO",
-        "tags":     ["Portal", "Non-Profit", "Web"],
-    },
-    {
-        "type":      "project",
-        "title":     "Confidential Fintech Project",
-        "status":    "delivered",
-        "anonymous": True,
-        "description": (
-            "A fintech-adjacent product built under full NDA. "
-            "Involved secure data handling and a mobile-first interface."
-        ),
-        "team":     [],
-        "review":   "Professionalism from start to finish. Would absolutely engage this team again.",
-        "reviewer": "Client (identity withheld per NDA)",
-        "tags":     ["Fintech", "Mobile", "NDA"],
-    },
-    {
-        "type":      "project",
-        "title":     "Community Events Platform",
-        "status":    "in-progress",
-        "anonymous": False,
-        "description": (
-            "Internal BuildIT project — our own events management system "
-            "so we can move off Google Forms. Open to members who want to contribute."
-        ),
-        "team":     ["@Felix A.", "@Grace T."],
-        "review":   "Member project — ping us in the channel if you want to contribute.",
-        "reviewer": "BuildIT Team",
-        "tags":     ["Internal", "Open to Contributors"],
-    },
+    }
 ]
 
 VALUES = [
@@ -220,6 +193,7 @@ VALUES = [
 ]
 
 TICKER_ITEMS = [
+    "Upcoming: Investors Meet and Greet 15th July"
     "Next: Patent or Perish? — Coming Soon",
     "8 articles live on Substack — go read them",
     "Open to new members — apply now",
