@@ -38,6 +38,7 @@ var WEBHOOK_SECRET = "buildit-sheets-sync-2025";
  * IMPORTANT: Check your column names match below.
  * Open your Sheet, look at row 1 (headers), update the mapping if needed.
  */
+
 function onFormSubmit(e) {
 
   // ── Get the submitted row ─────────────────────────────────────────────────
@@ -56,14 +57,17 @@ function onFormSubmit(e) {
   // Look at your Google Form column headers and update these strings to match.
   // Common names are shown as comments.
 
-  var payload = {
-    secret: WEBHOOK_SECRET,
-    name:   findField(data, ["Full Name", "Name", "Your Name", "Full name"]),
-    email:  findField(data, ["Email", "Email Address", "Email address", "E-mail"]),
-    phone:  findField(data, ["Phone", "Phone Number", "WhatsApp", "Mobile"]),
-    role:   findField(data, ["Role", "Your Role", "What do you do", "Skill", "Background"]),
-  };
-
+var payload = {
+  secret:    WEBHOOK_SECRET,
+  name:      findField(data, FIELD_MAP.name),
+  email:     findField(data, FIELD_MAP.email),
+  phone:     findField(data, FIELD_MAP.phone),
+  role:      findField(data, FIELD_MAP.role),
+  location:  findField(data, FIELD_MAP.location),
+  age_range: findField(data, FIELD_MAP.age_range),
+  community: findField(data, FIELD_MAP.community),
+  education: findField(data, FIELD_MAP.education),
+};
   Logger.log("Sending to Flask: " + JSON.stringify(payload));
 
   // ── Send to Flask ─────────────────────────────────────────────────────────
