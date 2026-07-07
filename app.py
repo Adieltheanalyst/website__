@@ -12,6 +12,12 @@ from datetime import datetime
 from functools import wraps
 from flask import (Flask, render_template, request, redirect,
                    url_for, session, flash, g, jsonify)
+try:
+    from email_utils import send_welcome_email
+    EMAIL_ENABLED = True
+except Exception:
+    EMAIL_ENABLED = False
+    print("[EMAIL] email_utils not configured - email disabled")
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "buildit-change-this-in-production")
@@ -436,12 +442,29 @@ def add_member():
             VALUES (?, ?, ?, 'member', 'active', datetime('now'), ?)
         """, (name, email, hash_password(temp_pw), notes))
         db.commit()
-        flash(
-            f"✅ Member added! Share these credentials with {name}: "
-            f"Email: {email} | Temp password: {temp_pw} "
-            f"(they should change it after login)",
-            "success"
-        )
+        email_sent=False
+        if EMAIL_ENABLED:
+            ok,_= send_welcome_email(name,email,temp_pw)
+            email_sent=ok
+        if email_sent:
+            flash(
+                f" {name} added and welcome email sent to {email}!"
+                f"Temp pw: {temp_pw}",
+                "success"
+            )
+        else:
+            flash(
+                f"{name} added. Share manually -"
+                f"Email: {email} | Temp pw: {temp_pw}",
+                "success"
+            )
+
+        # flash(
+        #     f"✅ Member added! Share these credentials with {name}: "
+        #     f"Email: {email} | Temp password: {temp_pw} "
+        #     f"(they should change it after login)",
+        #     "success"
+        # )
     except sqlite3.IntegrityError:
         flash(f"Email {email} already exists in the database.", "error")
     return redirect(url_for("admin"))
@@ -450,21 +473,42 @@ def add_member():
 @admin_required
 def approve_member(member_id):
     db = get_db()
-    member_row = db.execute("SELECT * FROM members WHERE id=?", (member_id,)).fetchone()
+    member_row = db.execute(
+        "SELECT * FROM members WHERE id=?", (member_id,)
+    ).fetchone()
     if not member_row:
         flash("Member not found.", "error")
         return redirect(url_for("admin"))
-    temp_pw = secrets.token_urlsafe(8)
+
+    import random
+    words  = ["Build","Code","Tech","Create","Launch","Ship","Connect","Craft"]
+    temp_pw = f"{random.choice(words)}-{random.choice(words)}-{random.randint(1000,9999)}"
+
     db.execute("""
         UPDATE members SET status='active', password=?, approved_at=datetime('now')
         WHERE id=?
     """, (hash_password(temp_pw), member_id))
     db.commit()
-    flash(
-        f"✅ {member_row['name']} approved! "
-        f"Share temp password: {temp_pw}",
-        "success"
-    )
+
+    email_sent = False
+    if EMAIL_ENABLED:
+        ok, err = send_welcome_email(
+            member_row["name"], member_row["email"], temp_pw
+        )
+        email_sent = ok
+
+    if email_sent:
+        flash(
+            f"✅ {member_row['name']} approved — welcome email sent to "
+            f"{member_row['email']}! Temp pw: {temp_pw}",
+            "success"
+        )
+    else:
+        flash(
+            f"✅ {member_row['name']} approved — share manually. "
+            f"Temp pw: {temp_pw}",
+            "success"
+        )
     return redirect(url_for("admin"))
 
 @app.route("/admin/suspend/<int:member_id>")
