@@ -679,7 +679,13 @@ def sheets_webhook():
     email = (data.get("email") or "").strip().lower()
     phone = (data.get("phone") or "").strip()   # optional
     role_applied = (data.get("role") or "").strip()  # e.g. "Designer", "Developer"
-    notes = f"Via Google Form. Role: {role_applied}. Phone: {phone}".strip(". ")
+    # notes = f"Via Google Form. Role: {role_applied}. Phone: {phone}".strip(". ")
+    location = (data.get("location") or "").strip()
+    age_range = (data.get("age_range") or "").strip()
+    community = (data.get("community") or "").strip()
+    education = (data.get("education") or "").strip()
+    notes = f"Via Google Form | Role: {role_applied} | Location: {location} | Age: {age_range} | Community: {community} | Education: {education}"
+
 
     if not name or not email:
         return jsonify({"ok": False, "error": "name and email are required"}), 400
