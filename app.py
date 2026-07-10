@@ -7,7 +7,7 @@ Visit: http://localhost:5000
 Admin: http://localhost:5000/admin  (first run creates admin user)
 """
 
-import os, sqlite3, hashlib, secrets, hmac
+import os, sqlite3, hashlib, secrets, hmac,random,string
 from datetime import datetime
 from functools import wraps
 from flask import (Flask, render_template, request, redirect,
@@ -419,11 +419,19 @@ def admin():
     active  = db.execute(
         "SELECT * FROM members WHERE status='active' ORDER BY joined_at DESC"
     ).fetchall()
+    new_members = db.execute("""
+        SELECT * FROM members 
+        WHERE status='active' 
+        AND joined_at >= datetime('now', '-7 days')
+        AND role != 'admin'
+        ORDER BY joined_at DESC
+    """).fetchall()
     all_members = db.execute(
         "SELECT * FROM members ORDER BY joined_at DESC"
     ).fetchall()
     return render_template("admin.html", site=SITE, member=member,
                            pending=pending, active=active,
+                           new_members=new_members,
                            all_members=all_members)
 
 @app.route("/admin/add-member", methods=["POST"])
@@ -480,10 +488,14 @@ def approve_member(member_id):
         flash("Member not found.", "error")
         return redirect(url_for("admin"))
 
-    import random
-    words  = ["Build","Code","Tech","Create","Launch","Ship","Connect","Craft"]
-    temp_pw = f"{random.choice(words)}-{random.choice(words)}-{random.randint(1000,9999)}"
-
+    import random, string
+    words   = ["Build","Code","Tech","Create","Launch","Ship","Connect","Craft"]
+    word    = random.choice(words)
+    symbol  = random.choice(["#", "@", "!"])
+    numbers = str(random.randint(1000, 9999))
+    letters = ''.join(random.choices(string.ascii_lowercase, k=2))
+    temp_pw = f"{word}{symbol}{numbers}{letters}"
+    
     db.execute("""
         UPDATE members SET status='active', password=?, approved_at=datetime('now')
         WHERE id=?
@@ -705,20 +717,29 @@ def sheets_webhook():
         })
 
     # Temp password — member will be asked to change it on first login
-    temp_pw = secrets.token_urlsafe(8)
+    words   = ["Build","Code","Tech","Create","Launch","Ship","Connect","Craft"]
+    word    = random.choice(words)
+    symbol  = random.choice(["#", "@", "!"])
+    numbers = str(random.randint(1000, 9999))
+    letters = ''.join(random.choices(string.ascii_lowercase, k=2))
+    temp_pw = f"{word}{symbol}{numbers}{letters}"
 
     db.execute("""
         INSERT INTO members (name, email, password, role, status, notes)
-        VALUES (?, ?, ?, 'member', 'pending', ?)
+        VALUES (?, ?, ?, 'member', 'active', ?)
     """, (name, email, hash_password(temp_pw), notes))
     db.commit()
 
-    print(f"[WEBHOOK] New member from Google Form: {name} <{email}>")
+    # Send welcome email immediately with their login credentials
+    if EMAIL_ENABLED:
+        send_welcome_email(name, email, temp_pw)
+
+    print(f"[WEBHOOK] New member auto-activated: {name} <{email}>")
 
     return jsonify({
         "ok":      True,
         "status":  "created",
-        "message": f"{name} added as pending. Approve at /admin",
+        "message": f"{name} added and emailed automatically",
     }), 201
 
 
