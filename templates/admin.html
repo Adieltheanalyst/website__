@@ -44,6 +44,54 @@
     </div>
 
     <!-- Stats bar -->
+    <!-- NEW THIS WEEK — your review queue -->
+    <div class="admin-section" style="border-color:rgba(139,238,224,0.4);">
+      <h2>👀 New this week ({{ new_members|length }}) — review these</h2>
+      {% if new_members %}
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem;">
+        These members joined via Google Form in the last 7 days. 
+        They already have access — delete them if something looks off.
+      </p>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Details</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in new_members %}
+            <tr>
+              <td><strong>{{ m.name }}</strong></td>
+              <td>{{ m.email }}</td>
+              <td style="color:var(--muted);font-size:0.78rem;max-width:220px;">
+                {{ m.notes or '—' }}
+              </td>
+              <td>{{ m.joined_at[:10] }}</td>
+              <td class="admin-actions">
+                <a href="/admin/suspend/{{ m.id }}" class="btn-sm danger-ghost">Suspend</a>
+                <form method="POST" action="/admin/delete/{{ m.id }}" 
+                      style="display:inline;"
+                      onsubmit="return confirm('Delete {{ m.name }}? This cannot be undone.')">
+                  <button class="btn-sm danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p style="color:var(--muted);font-size:0.88rem;">
+        No new members this week. When someone fills your Google Form 
+        they'll appear here automatically for your review.
+      </p>
+      {% endif %}
+    </div>
     <div class="admin-stats">
       <div class="admin-stat"><div class="admin-stat-val">{{ all_members|length }}</div><div class="admin-stat-label">Total</div></div>
       <div class="admin-stat"><div class="admin-stat-val mint">{{ active|length }}</div><div class="admin-stat-label">Active</div></div>
