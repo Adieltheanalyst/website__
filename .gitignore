@@ -1,0 +1,7 @@
+members.db
+__pycache__/
+*.pyc
+*.pyo
+.env
+import_log.txt
+test_setup.py
