@@ -4,7 +4,7 @@ Running it once to import existing sheet members and email them
 
 """
 
-import sys , os ,secrets ,sqlite3, hashlib,time, random
+import sys , os ,secrets ,sqlite3, hashlib,time, random,string
 sys.path.insert(0, os.path.dirname(__file__))
 from email_utils import send_welcome_email, ZOHO_EMAIL, SITE_URL
 
@@ -29,8 +29,12 @@ def generate_password():
     words=["Build", "Code", "Tech", "Nairobi","Create",
            "Launch", "Ship", "Stack", "Design", "Hustle", "Grow",
            "Connect"]
+    word=random.choice(words)
+    symbol = random.choice(["#","@","!"])
+    numbers=str(random.randint(1000,9999))
+    letters=''.join(random.choices(string.ascii_lowercase,k=2))
     
-    return f"{random.choice(words)}-{random.choice(words)}- {random.randint(1000,9999)}"
+    return f"{word}{symbol}{numbers}{letters}"
 
 def import_member(db,name,email,send_now=False):
     email=email.strip().lower()
