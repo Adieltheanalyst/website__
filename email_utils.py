@@ -7,15 +7,15 @@ from email.mime.multipart import MIMEMultipart
 
 
 ZOHO_EMAIL = os.environ.get("ZOHO_EMAIL", "communications@builditconnective.co.ke")
-ZOHO_PASSWORD = os.environ.get("ZOHO_PASSWORD", "BuildIT2024.")
-SITE_URL = os.environ.get("SITE_URL", "https://localhost:5000")
+ZOHO_PASSWORD = os.environ.get("ZOHO_PASSWORD", "B58gpvVTiNQr")
+SITE_URL = os.environ.get("SITE_URL", "http://localhost:5000")
 
 SITE_NAME = "BuildIT Connective"
 
 def send_email(to_email, subject, html_body, text_body=None):
     msg=MIMEMultipart("alternative")
     msg["Subject"]= subject
-    msg["From"] = f"{SITE_NAME} < {ZOHO_EMAIL}>"
+    msg["From"] = f"{SITE_NAME} <{ZOHO_EMAIL}>"
     msg["To"]= to_email
 
     if text_body:
@@ -38,7 +38,7 @@ def send_email(to_email, subject, html_body, text_body=None):
 def send_welcome_email(name,email,temp_password):
     first_name=name.split()[0]
     login_url= f"{SITE_URL}/login"
-    change_url= f"{SITE_URL}/ set-password"
+    change_url= f"{SITE_URL}/set-password"
     subject= f"You're in, {first_name}! Your BuildIT connective login"
 
     html = f"""
@@ -125,4 +125,4 @@ Change password after login: {change_url}
 -BuildIT Connective
 """
     return send_email(email,subject, html,text)
-    
+
