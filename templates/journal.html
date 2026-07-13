@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Journal — {{ site.name }}{% endblock %}
+{% block content %}
+
+<div style="padding-top:80px;">
+
+  <!-- HEADER -->
+  <div style="background:var(--grad);padding:4rem 3rem 3rem;">
+    <div class="inner">
+      <span class="eyebrow">Journal</span>
+      <h1 class="section-title">Thoughts from the community</h1>
+      <p class="section-sub">
+        We write about tech, business, policy, and building in Africa. 
+        Published on Substack — free for everyone.
+      </p>
+    </div>
+  </div>
+
+  <!-- ARTICLES -->
+  <section class="journal" style="background:var(--navy);">
+    <div class="inner">
+
+      <!-- Filter tags -->
+      <div class="work-tabs" style="margin-bottom:2rem;">
+        <button class="tab-btn active" data-tag="all">All</button>
+        <button class="tab-btn" data-tag="Founders">Founders</button>
+        <button class="tab-btn" data-tag="Finance">Finance</button>
+        <button class="tab-btn" data-tag="Analysis">Analysis</button>
+        <button class="tab-btn" data-tag="Policy">Policy</button>
+        <button class="tab-btn" data-tag="Community">Community</button>
+        <button class="tab-btn" data-tag="Climate">Climate</button>
+        <button class="tab-btn" data-tag="AI & Web3">AI & Web3</button>
+      </div>
+
+      <div class="journal-grid" id="journal-grid">
+        {% for j in journal %}
+        <a href="{{ j.link }}" target="_blank" class="jcard fade-in" data-tag="{{ j.tag }}">
+          <div class="jtag">{{ j.tag }}</div>
+          <h3>{{ j.title }}</h3>
+          <p>{{ j.excerpt }}</p>
+          <div class="jcard-footer">
+            <span class="jcard-date">{{ j.date }}</span>
+            <span class="jcard-read">Read on Substack ↗</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      <div style="margin-top:3rem;text-align:center;">
+        <a href="{{ site.socials.substack }}" target="_blank" class="btn-primary">
+          Follow on Substack to get new articles →
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+// Filter by tag
+document.querySelectorAll('.tab-btn[data-tag]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn[data-tag]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tag = btn.dataset.tag;
+    document.querySelectorAll('.jcard[data-tag]').forEach(card => {
+      card.style.display = (tag === 'all' || card.dataset.tag === tag) ? '' : 'none';
+    });
+  });
+});
+</script>
+
+{% endblock %}
