@@ -119,59 +119,84 @@ JOURNAL = [
 WORK = [
     # ── EVENTS ──
     {
-        "type": "event",
-        "id": "investor-meet-greet-july-2026",
-        "title": "Investor Meet & Greet",
-        "subtitle": "July Edition, 2026",
-        "date": "15th July 2026",
-        "time": "9:00 AM - 12:00 PM",
-        "location": "ALX, The Piano. Brookside Drive",
-        "status": "upcoming",
-        "description":"Join us for the July 2026 Edition of the BuildIT Investor Meet & Greet for an exclusive morning of high-impact networking, visionary pitches, and ecosystem building.",
-        "rsvp_link": "https://luma.com/ga1gls29",
-        "poster": "investors_meet_&_greet.jpeg",
-        "gallery_link": "",
-        "members_only_gallery": False,
-
-    },
-    {
-        "type":      "event",
-        "id":        "patent-or-perish",
-        "title":     "Patent or Perish?",
-        "subtitle":  "The Real Talk of IP",
-        "date":      "Coming Soon",
-        "time":      "",
-        "location":  "Nairobi",
-        "status":    "upcoming",
+        "type":     "event",
+        "id":       "raising-capital-legal",
+        "title":    "Raising Capital: Legal Due Diligence Readiness",
+        "subtitle": "With Valarie Waswa — Principal Attorney",
+        "date":     "7th August, 2026",
+        "time":     "11:00 AM – 12:30 PM",
+        "location": "Google Meet (Online)",
+        "status":   "upcoming",
         "description": (
-            "Everything founders get wrong about intellectual property — "
-            "patents, trademarks, copyrights, and what actually matters "
-            "when you're building. No legal jargon. Just real talk."
+            "Mastering the legal framework to secure investor confidence. "
+            "Join Principal Attorney Valarie Waswa of Valarie Waswa Advocates "
+            "for a deep dive into what legal due diligence actually means for "
+            "founders raising capital — and how to be ready for it."
         ),
-        # "rsvp_link":    "https://forms.gle/iQMFzdYPJQCtHoLv8",
-        "poster":       "patent-or-perish.jpg",
-        "gallery_link": "",
+        "rsvp_link":            "https://shorturl.at/vFD4K",
+        "poster":               "raising-capital-legal.jpg",
+        "gallery_link":         "",
         "members_only_gallery": False,
     },
     {
-        "type":      "event",
-        "id":        "idea-to-prototype",
-        "title":     "From Idea to Prototype",
-        "subtitle":  "In One Day",
-        "date":      "June 13, 2026",
-        "time":      "9AM – 5PM",
-        "location":  "British Institute in Eastern Africa",
-        "status":    "past",
+        "type":     "event",
+        "id":       "investor-meet-greet-august-2026",
+        "title":    "Investor Meet & Greet: August 2026 Edition",
+        "subtitle": "with Serere Ventures",
+        "date":     "12th August, 2026",
+        "time":     "4:00 PM – 6:00 PM",
+        "location": "ALX, The Piano. Brookside Drive",
+        "status":   "upcoming",
+        "description": (
+            "Understanding The Milestones That Unlock Investment. "
+            "Learn how to map the right investors for your startup and identify "
+            "the milestones investors expect before you raise. "
+            "Co-hosted with ALX Ventures and Impact Hub Nairobi. "
+            "Powered by Kenya Tech Events and CardTag."
+        ),
+        "rsvp_link":            "https://shorturl.at/vFD4K",
+        "poster":               "investor-meet-greet-august.jpg",
+        "gallery_link":         "",
+        "members_only_gallery": False,
+    },
+    {
+        "type":     "event",
+        "id":       "investor-meet-greet-july-2026",
+        "title":    "Investor Meet & Greet: July 2026 Edition",
+        "subtitle": "July Edition",
+        "date":     "15th July, 2026",
+        "time":     "9:00 AM – 12:00 PM",
+        "location": "ALX, The Piano. Brookside Drive",
+        "status":   "past",
+        "description": (
+            "An exclusive morning of high-impact networking, visionary pitches, "
+            "and ecosystem building. Brought together founders, investors, and "
+            "builders from across Nairobi."
+        ),
+        "rsvp_link":            "",
+        "poster":               "investors_meet_&_greet.jpeg",
+        "gallery_link":         "https://drive.google.com/drive/folders/1wL7GZCV1DzRixGBo12j8ulveaZEpYLIu",
+        "members_only_gallery": True,
+    },
+    {
+        "type":     "event",
+        "id":       "idea-to-prototype",
+        "title":    "From Idea to Prototype",
+        "subtitle": "In One Day",
+        "date":     "June 13, 2026",
+        "time":     "9AM – 5PM",
+        "location": "British Institute in Eastern Africa",
+        "status":   "past",
         "description": (
             "A full-day hands-on event open to everyone regardless of tech "
             "background. Tools: Figma, Claude, N8N, Firebase Studio. "
             "Co-hosted with INKA Society, Kenya Ni Mimi, ARTS, and the "
             "British Institute in Eastern Africa."
         ),
-        "rsvp_link":    "",
-        "poster":       "idea-to-prototype.jpg",
-        "gallery_link": "https://drive.google.com/drive/folders/11pAl--DkFaupQEp1q8hcz8etgV1QGltC",
-        "members_only_gallery": True,   # ← members only
+        "rsvp_link":            "",
+        "poster":               "idea-to-prototype.jpg",
+        "gallery_link":         "https://drive.google.com/drive/folders/11pAl--DkFaupQEp1q8hcz8etgV1QGltC",
+        "members_only_gallery": True,
     },
     # ── PROJECTS ──
     {
@@ -184,11 +209,11 @@ WORK = [
             "order tracking, kitchen display, and end-of-day reporting. "
             "Built for a Nairobi-based restaurant moving off manual processes."
         ),
-        "team": [],
+        "team":     [],
         "review":   "The system completely transformed our operations. What used to take two staff members now runs itself.",
         "reviewer": "Client (identity withheld by request)",
         "tags":     ["Web App", "Operations", "F&B"],
-    }
+    },
 ]
 
 VALUES = [
@@ -199,13 +224,14 @@ VALUES = [
 ]
 
 TICKER_ITEMS = [
-    "Upcoming: Investors Meet and Greet 15th July"
-    "Next: Patent or Perish? — Coming Soon",
+    "TODAY: Raising Capital — Legal Due Diligence Readiness 🔴 LIVE 11AM",
+    "Upcoming: Investor Meet & Greet with Serere Ventures — Aug 12th",
+    "Tickets available — shorturl.at/vFD4K",
     "8 articles live on Substack — go read them",
     "Open to new members — apply now",
     "We built a restaurant management system 🍽️",
-    "BuildIT × INKA × Kenya Ni Mimi × ARTS",
-    "Nairobi's builder community is growing",
+    "BuildIT × ALX Ventures × Impact Hub Nairobi",
+    "Nairobi's builder community is growing 🚀",
 ]
 
 
