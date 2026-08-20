@@ -134,7 +134,7 @@ WORK = [
             "founders raising capital — and how to be ready for it."
         ),
         "rsvp_link":            "https://shorturl.at/vFD4K",
-        "poster":               "raising-capital-legal.jpg",
+        "poster":               "raising-capital-legal.jpeg",
         "gallery_link":         "",
         "members_only_gallery": False,
     },
@@ -155,7 +155,7 @@ WORK = [
             "Powered by Kenya Tech Events and CardTag."
         ),
         "rsvp_link":            "https://shorturl.at/vFD4K",
-        "poster":               "investor-meet-greet-august.jpg",
+        "poster":               "investor-meet-greet-august.jpeg",
         "gallery_link":         "",
         "members_only_gallery": False,
     },
