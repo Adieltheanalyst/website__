@@ -4,10 +4,13 @@ BUILDIT CONNECTIVE - EMAIL VIA ZOHO SMTP"""
 import smtplib, os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from dotenv import load_dotenv
+load_dotenv()
 
 
-ZOHO_EMAIL = os.environ.get("ZOHO_EMAIL", "communications@builditconnective.co.ke")
-ZOHO_PASSWORD = os.environ.get("ZOHO_PASSWORD", "B58gpvVTiNQr")
+
+ZOHO_EMAIL = os.environ.get("ZOHO_EMAIL", "")
+ZOHO_PASSWORD = os.environ.get("ZOHO_PASSWORD", "")
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:5000")
 
 SITE_NAME = "BuildIT Connective"
