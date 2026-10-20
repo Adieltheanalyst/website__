@@ -120,22 +120,63 @@ WORK = [
     # ── EVENTS ──
     {
         "type":     "event",
-        "id":       "raising-capital-legal",
-        "title":    "Raising Capital: Legal Due Diligence Readiness",
-        "subtitle": "With Valarie Waswa — Principal Attorney",
-        "date":     "7th August, 2026",
+        "id":       "investor-meet-greet-october-2026",
+        "title":    "Investor Meet & Greet: October 2026 Edition",
+        "subtitle": "",                                   # TODO: guest investor or session title
+        "date":     "October 2026",                       # TODO: exact date
+        "time":     "",                                   # TODO
+        "location": "ALX, The Piano. Brookside Drive",    # TODO: confirm venue
+        "status":   "past",
+        "description": (
+            "Our October edition of the Investor Meet & Greet, hosted with "
+            "ALX Ventures and Impact Hub Nairobi. Photos from the evening are "
+            "in the member space."
+        ),
+        "rsvp_link":      "",
+        "poster":         "",                             # TODO: add poster filename
+        "gallery_link":   "https://drive.google.com/drive/folders/1F-b1Fp5_Va3G-Gz0f5onDXieEK3co3Ny?usp=sharing",
+        "recording_link": "",
+        "members_only_gallery": True,
+    },
+    {
+        "type":     "event",
+        "id":       "investor-meet-greet-september-2026",
+        "title":    "Investor Meet & Greet: September 2026 Edition",
+        "subtitle": "Anatomy of the Due Diligence",
+        "date":     "9th September, 2026",
+        "time":     "4:00 PM – 6:00 PM",
+        "location": "ALX, The Piano. Brookside Drive",
+        "status":   "past",
+        "description": (
+            "Understand how investors evaluate your startup through due diligence, "
+            "including your data room, valuation, and key legal, financial, and "
+            "operational considerations. Hosted with ALX Ventures and Impact Hub "
+            "Nairobi. Powered by Kenya Tech Events and CardTag."
+        ),
+        "rsvp_link":      "",
+        "poster":         "investor-meet-greet-september.jpeg",
+        "gallery_link":   "https://jamesachesa.pixieset.com/investormeetandgreetsept/",
+        "recording_link": "",
+        "members_only_gallery": True,
+    },
+    {
+        "type":     "event",
+        "id":       "legal-desk-protecting-your-code",
+        "title":    "Legal Desk: Protecting Your Code",
+        "subtitle": "IP & Contract Basics for Developers, with Valarie Waswa",
+        "date":     "4th September, 2026",
         "time":     "11:00 AM – 12:30 PM",
         "location": "Google Meet (Online)",
-        "status":   "upcoming",
+        "status":   "past",
         "description": (
-            "Mastering the legal framework to secure investor confidence. "
-            "Join Principal Attorney Valarie Waswa of Valarie Waswa Advocates "
-            "for a deep dive into what legal due diligence actually means for "
-            "founders raising capital — and how to be ready for it."
+            "Part of the Legal Desk Monthly Webinars. Principal Attorney Valarie "
+            "Waswa walked developers through intellectual property and contract "
+            "basics: who owns the code you write, and how to protect it."
         ),
-        "rsvp_link":            "https://shorturl.at/vFD4K",
-        "poster":               "raising-capital-legal.jpeg",
-        "gallery_link":         "",
+        "rsvp_link":      "",
+        "poster":         "legal-desk-protecting-your-code.jpeg",
+        "gallery_link":   "",
+        "recording_link": "https://youtu.be/xmRSpTHdbnU",
         "members_only_gallery": False,
     },
     {
@@ -146,36 +187,57 @@ WORK = [
         "date":     "12th August, 2026",
         "time":     "4:00 PM – 6:00 PM",
         "location": "ALX, The Piano. Brookside Drive",
-        "status":   "upcoming",
+        "status":   "past",
         "description": (
-            "Understanding The Milestones That Unlock Investment. "
-            "Learn how to map the right investors for your startup and identify "
-            "the milestones investors expect before you raise. "
-            "Co-hosted with ALX Ventures and Impact Hub Nairobi. "
+            "Understanding the milestones that unlock investment: mapping the "
+            "right investors for your startup and the milestones they expect "
+            "before you raise. Hosted with ALX Ventures and Impact Hub Nairobi. "
             "Powered by Kenya Tech Events and CardTag."
         ),
-        "rsvp_link":            "https://shorturl.at/vFD4K",
-        "poster":               "investor-meet-greet-august.jpeg",
-        "gallery_link":         "",
+        "rsvp_link":      "",
+        "poster":         "investor-meet-greet-august.jpeg",
+        "gallery_link":   "https://drive.google.com/drive/folders/1EcsnuQlrC7LePARJK4DcPm_WJkfiuqkm",
+        "recording_link": "",
+        "members_only_gallery": True,
+    },
+    {
+        "type":     "event",
+        "id":       "raising-capital-legal",
+        "title":    "Legal Desk: Raising Capital",
+        "subtitle": "Legal Due Diligence Readiness, with Valarie Waswa",
+        "date":     "7th August, 2026",
+        "time":     "11:00 AM – 12:30 PM",
+        "location": "Google Meet (Online)",
+        "status":   "past",
+        "description": (
+            "Mastering the legal framework to secure investor confidence. "
+            "High Court Advocate Valarie Waswa explained what legal due diligence "
+            "means for founders raising capital and how to be ready for it."
+        ),
+        "rsvp_link":      "",
+        "poster":         "raising-capital-legal.jpeg",
+        "gallery_link":   "",
+        "recording_link": "https://youtu.be/m5Zln6WiZpA",
         "members_only_gallery": False,
     },
     {
         "type":     "event",
         "id":       "investor-meet-greet-july-2026",
         "title":    "Investor Meet & Greet: July 2026 Edition",
-        "subtitle": "July Edition",
+        "subtitle": "with VestedWorld",
         "date":     "15th July, 2026",
-        "time":     "9:00 AM – 12:00 PM",
+        "time":     "4:00 PM – 6:00 PM",
         "location": "ALX, The Piano. Brookside Drive",
         "status":   "past",
         "description": (
-            "An exclusive morning of high-impact networking, visionary pitches, "
-            "and ecosystem building. Brought together founders, investors, and "
-            "builders from across Nairobi."
+            "Growing Before Raising: building investor confidence through execution. "
+            "What investors look for beyond the pitch deck, and practical "
+            "strategies for building and managing investor relations."
         ),
-        "rsvp_link":            "",
-        "poster":               "investors_meet_&_greet.jpeg",
-        "gallery_link":         "https://drive.google.com/drive/folders/1wL7GZCV1DzRixGBo12j8ulveaZEpYLIu",
+        "rsvp_link":      "",
+        "poster":         "investor-meet-greet-july.jpeg",
+        "gallery_link":   "https://drive.google.com/drive/folders/1wL7GZCV1DzRixGBo12j8ulveaZEpYLIu",
+        "recording_link": "",
         "members_only_gallery": True,
     },
     {
@@ -193,26 +255,11 @@ WORK = [
             "Co-hosted with INKA Society, Kenya Ni Mimi, ARTS, and the "
             "British Institute in Eastern Africa."
         ),
-        "rsvp_link":            "",
-        "poster":               "idea-to-prototype.jpg",
-        "gallery_link":         "https://drive.google.com/drive/folders/11pAl--DkFaupQEp1q8hcz8etgV1QGltC",
+        "rsvp_link":      "",
+        "poster":         "idea-to-prototype.jpg",
+        "gallery_link":   "https://drive.google.com/drive/folders/11pAl--DkFaupQEp1q8hcz8etgV1QGltC",
+        "recording_link": "",
         "members_only_gallery": True,
-    },
-    # ── PROJECTS ──
-    {
-        "type":      "project",
-        "title":     "Restaurant Management System",
-        "status":    "delivered",
-        "anonymous": True,
-        "description": (
-            "A full restaurant management system covering table reservations, "
-            "order tracking, kitchen display, and end-of-day reporting. "
-            "Built for a Nairobi-based restaurant moving off manual processes."
-        ),
-        "team":     [],
-        "review":   "The system completely transformed our operations. What used to take two staff members now runs itself.",
-        "reviewer": "Client (identity withheld by request)",
-        "tags":     ["Web App", "Operations", "F&B"],
     },
 ]
 
@@ -224,11 +271,10 @@ VALUES = [
 ]
 
 TICKER_ITEMS = [
-    "TODAY: Raising Capital — Legal Due Diligence Readiness 🔴 LIVE 11AM",
-    "Upcoming: Investor Meet & Greet with Serere Ventures — Aug 12th",
-    "Tickets available — shorturl.at/vFD4K",
-    "8 articles live on Substack — go read them",
-    "Open to new members — apply now",
+    "Catch up: Investor Meet & Greet photos and Legal Desk recordings",
+    "Legal Desk webinars now on YouTube",
+    "8 articles live on Substack. Go read them",
+    "Open to new members. Apply now",
     "We built a restaurant management system 🍽️",
     "BuildIT × ALX Ventures × Impact Hub Nairobi",
     "Nairobi's builder community is growing 🚀",

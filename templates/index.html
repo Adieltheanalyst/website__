@@ -38,16 +38,27 @@
         <div class="stat-sub">this year</div>
       </div>
       <div class="stat-card wide">
-        {% if next_event %}
-        <div class="next-event">
-          <div>
-            <div class="stat-label">Next Event</div>
-            <div class="next-title">{{ next_event.title }}</div>
-            <div class="next-meta">📍 {{ next_event.date }} · {{ next_event.location }}</div>
-          </div>
-          <span class="pill soon">Coming Soon</span>
+      {% set upcoming = work | selectattr('type', 'equalto', 'event') | selectattr('status', 'equalto', 'upcoming') | list %}
+      {% if upcoming %}
+      {% set ev = upcoming[0] %}
+      <div class="next-event">
+        <div>
+          <div class="stat-label">Next Event</div>
+          <div class="next-title">{{ ev.title }}</div>
+          <div class="next-meta">{{ ev.date }}{% if ev.time %} · {{ ev.time }}{% endif %} · {{ ev.location }}</div>
         </div>
-        {% endif %}
+        {% if ev.rsvp_link %}<a href="{{ ev.rsvp_link }}" target="_blank" class="pill soon">RSVP</a>{% else %}<span class="pill soon">Soon</span>{% endif %}
+      </div>
+      {% else %}
+      <div class="next-event">
+        <div>
+          <div class="stat-label">Next Event</div>
+          <div class="next-title">Announcing soon</div>
+          <div class="next-meta">Follow us on Instagram for updates</div>
+        </div>
+        <span class="pill soon">Soon</span>
+      </div>
+      {% endif %}
       </div>
     </div>
   </div>
@@ -136,6 +147,9 @@
                 {% else %}
                 <a href="{{ item.gallery_link }}" target="_blank" class="btn-sm ghost">📸 View Gallery</a>
                 {% endif %}
+              {% endif %}
+              {% if item.recording_link %}
+              <a href="{{ item.recording_link }}" target="_blank" class="btn-sm primary">▶ Watch Recording</a>
               {% endif %}
             </div>
           </div>
