@@ -22,13 +22,22 @@ except Exception:
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "buildit-change-this-in-production")
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "members.db")
+DB_PATH = os.environ.get("DB_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "members.db"))
+os.makedirs(os.path.dirname(DB_PATH) or ".", exist_ok=True)
 
 # ── Google Sheets webhook secret ──────────────────────────────────────────────
 # This is a shared secret between your Google Sheet and Flask.
 # Set the same value in both places. Change this to anything unique.
 # In production set it as an environment variable: WEBHOOK_SECRET=yourvalue
-WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "buildit-sheets-sync-2025")
+WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "")
+
+def webhook_ok(data):
+    """True only if the request carries the correct shared secret."""
+    given= str(data.get("secret","")) if isinstance(data, dict) else ""
+    return bool(WEBHOOK_SECRET) and hmac.compare_digest(given, WEBHOOK_SECRET)
+
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ══════════════════════════════════════════════
@@ -53,6 +62,7 @@ SITE = {
         "linkedin":  "https://www.linkedin.com/company/105680692/",
     },
     "stats": {"members": "40+", "projects": "12", "events": "20+"},
+    "whatsapp": os.environ.get("WHATSAPP_LINK", ""),
 }
 
 # ── Real Substack articles ──
@@ -316,14 +326,19 @@ def init_db():
     # Create default admin if none exists
     existing = db.execute("SELECT id FROM members WHERE role='admin'").fetchone()
     if not existing:
-        pw = hash_password("buildit2025admin")
-        db.execute("""
-            INSERT INTO members (name, email, password, role, status, approved_at)
-            VALUES (?, ?, ?, 'admin', 'active', datetime('now'))
-        """, ("Admin", "admin@builditconnective.com", pw))
-        db.commit()
-        print("✅ Default admin created: admin@builditconnective.com / buildit2025admin")
-        print("   ⚠️  Change this password after first login!")
+        admin_email = os.environ.get("ADMIN_EMAIL","").strip().lower()
+        admin_pw = os.environ.get("ADMIN_PASSWORD","")
+        if not admin_email or not admin_pw:
+            print("No admin created: set ADMIN_EMAIL and ADMIN_PASSWORD, then redeploy.")
+        else:
+        # pw = hash_password("buildit2025admin")
+            db.execute("""
+                INSERT INTO members (name, email, password, role, status, approved_at)
+                VALUES (?, ?, ?, 'admin', 'active', datetime('now'))
+            """, ("Admin", "admin@builditconnective.com", admin_pw))
+            db.commit()
+        print(f"✅ Admin Created:{admin_email}")
+        # print("   ⚠️  Change this password after first login!")
     db.close()
 
 
@@ -340,6 +355,11 @@ def login_required(f):
         if "member_id" not in session:
             flash("Please log in to access this page.", "info")
             return redirect(url_for("login", next=request.path))
+        member = current_member()
+        if not member or member["status"] != "active":
+            session.clear()
+            flash("Your access has ended. Contact us if you think this is a mistake.","error")
+            return redirect(url_for("login"))
         return f(*args, **kwargs)
     return decorated
 
@@ -682,9 +702,9 @@ def form_submission():
     """
     data = request.get_json(silent=True)
 
-    if not data:
-        return jsonify({"ok": False, "error": "No JSON received"}), 400
-
+    if not webhook_ok(data):
+        return jsonify({"ok": False, "error": "Unauthorized"}), 401
+    
     # Verify secret token
     if data.get("secret") != SHEETS_SECRET:
         return jsonify({"ok": False, "error": "Unauthorized"}), 401
@@ -803,15 +823,18 @@ def sheets_webhook():
     db.commit()
 
     # Send welcome email immediately with their login credentials
+    emailed= False
     if EMAIL_ENABLED:
-        send_welcome_email(name, email, temp_pw)
+        emailed,_ = send_welcome_email(name, email, temp_pw)
+    
 
-    print(f"[WEBHOOK] New member auto-activated: {name} <{email}>")
+    print(f"[WEBHOOK] New member: {name} <{email}> emailed={emailed}")
 
     return jsonify({
         "ok":      True,
         "status":  "created",
-        "message": f"{name} added and emailed automatically",
+        "emailed": bool(emailed),
+        "message": f"{name} added" + (" and emailed" if emailed else "but the email FAILED"),
     }), 201
 
 
@@ -835,6 +858,78 @@ def api_status():
             "pending": counts["pending"],
         }
     })
+
+
+# ══════════════════════════════════════════════
+#  REMOVING MEMBERS (called by Google Apps Script)
+# ══════════════════════════════════════════════
+
+MAX_AUTO_REMOVE = int(os.environ.get("MAX_AUTO_REMOVE","4"))
+
+@app.route("/api/delete-number", methods=["POSTS"])
+def api_delete_member():
+    """Immediate removal of one member (the 'Remove Member' checkbox)."""
+    data = request.get_json(silent=True)
+    if not webhook_ok(data):
+        return jsonify({"ok": False, "error": "Unauthorized"}), 401
+    email = (data.get("email") or "").strip().lower()
+    if not email:
+        return jsonify({"ok": False, "error": "email required"}), 400
+    db  = get_db()
+    row = db.execute("SELECT id, name, role FROM members WHERE email=?", (email,)).fetchone()
+    if not row:
+        return jsonify({"ok": True, "status": "not_found"})
+    if row["role"] == "admin":
+        return jsonify({"ok": False, "error": "Admins can't be removed this way"}), 403
+    db.execute("DELETE FROM members WHERE id=?", (row["id"],))
+    db.commit()
+    print(f"[SYNC] Removed {row['name']} <{email}>")
+    return jsonify({"ok": True, "status": "deleted"})
+
+@app.route("/api/sync-members", methods=["POST"])
+def api_sync_members():
+    """
+    Hourly clean-up. The Sheet sends every email it still contains; any
+    Sheet-created member missing from that list is removed
+    Safeguards: admins and hand-added members are never touched, an empty
+    list does nothing and more than the MAX_AUTO_REMOVE removal aborts.
+    """
+    data =request.get_json(silent=True)
+    if not webhook_ok(data):
+        return jsonify({"ok": False, "error": "Unauthorized"}), 401
+
+    raw = data.get("emails")
+    if not isinstance(raw,list):
+        return jsonify({"ok": False, "error": "emails must be a list"}),400
+
+    sheet_emails={str(e).strip().lower() for e in raw if e}
+    if not sheet_emails:
+        return jsonify({"ok": False, "error": "emails must be a list"}), 400
+    sheet_emails = {str(e).strip().lower() for e in raw if e}
+    if not sheet_emails:
+        return jsonify({"ok": False, "aborted":True,
+                        "error": "sheet list was empty. Nothing removed."})
+
+    db = get_db()
+    rows = db.execute("""
+        SELECT id, name, email FROM members
+        WHERE role != 'admin' AND notes LIKE 'Via Google Form%'
+    """).fetchall()
+    stale = [r for r in rows if r["email"] not in sheet_emails]
+
+    if len(stale) > MAX_AUTO_REMOVE:
+        return jsonify({
+            "ok": False, "aborted": True,
+            "would_remove": [r["email"] for r in stale],
+            "error": f"Would remove {len(stale)} members (limit {MAX_AUTO_REMOVE}). Nothing was removed.",
+            })
+
+    for r in stale:
+        db.execute("DELETE FROM members WHERE id=?" , (r["id"],))
+        print(f"[SYNC] Removed {r['name']} <{r['email']}> (no longer in Sheet)")
+    db.commit()
+    return jsonify({"ok": True, "removed": [r["email"] for r in stale]})
+
 
 
 # ══════════════════════════════════════════════
