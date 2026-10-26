@@ -15,7 +15,9 @@
         <div class="mcard-icon">💬</div>
         <h3>Community Chat</h3>
         <p>Join the group to stay plugged into what's happening, project updates, and random good links.</p>
-        <a href="https://chat.whatsapp.com/YOUR_LINK" target="_blank" class="btn-sm primary">Join WhatsApp Group</a>
+        {% if site.whatsapp %}
+        <a href="{{ site.whatsapp }}" target="_blank" class="btn-sm primary">Join WhatsApp Group</a>
+        {% endif %}
       </div>
 
       <div class="mcard fade-in">

@@ -12,6 +12,8 @@ load_dotenv()
 ZOHO_EMAIL = os.environ.get("ZOHO_EMAIL", "")
 ZOHO_PASSWORD = os.environ.get("ZOHO_PASSWORD", "")
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:5000")
+WHATSAPP_LINK = os.environ.get("WHATSAPP_LINK", "")
+
 
 SITE_NAME = "BuildIT Connective"
 
@@ -25,7 +27,7 @@ def send_email(to_email, subject, html_body, text_body=None):
         msg.attach(MIMEText(text_body,"plain"))
     msg.attach(MIMEText(html_body,"html"))
     try:
-        with smtplib.SMTP_SSL("smtp.zoho.com",465) as server:
+        with smtplib.SMTP_SSL("smtp.zoho.com",465, timeout=20) as server:
             server.login(ZOHO_EMAIL,ZOHO_PASSWORD)
             server.sendmail(ZOHO_EMAIL,to_email, msg.as_string())
         print(f"[EMAIL] Sent to {to_email}")
@@ -43,6 +45,21 @@ def send_welcome_email(name,email,temp_password):
     login_url= f"{SITE_URL}/login"
     change_url= f"{SITE_URL}/set-password"
     subject= f"You're in, {first_name}! Your BuildIT connective login"
+
+    whatsapp_html=""
+    whatsapp_text=""
+    if WHATSAPP_LINK:
+        
+        whatsapp_html = f'''
+               <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0fdf9;border:2px solid #8BEEE0;border-radius:12px;margin:0 0 28px;">
+                 <tr><td style="padding:20px;text-align:center;">
+                   <div style="font-size:15px;font-weight:800;color:#021526;margin-bottom:6px;">One more step: join the WhatsApp group</div>
+                   <div style="font-size:13px;color:#64748b;margin-bottom:14px;">That's where events, updates and conversations happen.</div>
+                   <a href="{WHATSAPP_LINK}" style="display:inline-block;background:#25D366;color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;padding:12px 28px;border-radius:8px;">Join the WhatsApp group</a>
+                 </td></tr>
+               </table>'''
+        whatsapp_text = f"\nJoin our WhatsApp community: {WHATSAPP_LINK}\n"
+
 
     html = f"""
 <!DOCTYPE html>
@@ -91,7 +108,8 @@ def send_welcome_email(name,email,temp_password):
                 </a>
               </td></tr>
             </table>
-
+            
+            {whatsapp_html}
             <p style="color:#64748b;font-size:13px;border-top:1px solid #e2e8f0;padding-top:20px;margin:0;">
               Questions? Reply to this email or reach us at
               <a href="mailto:builditconnective@gmail.com" style="color:#03346E;">builditconnective@gmail.com</a>
@@ -123,6 +141,7 @@ Password: {temp_password}
 
 Log in: {login_url}
 Change password after login: {change_url}
+{whatsapp_text}
 
 
 -BuildIT Connective
