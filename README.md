@@ -6,10 +6,7 @@
 pip install -r requirements.txt
 python app.py
 ```
-Open http://localhost:5000  
-Admin panel: http://localhost:5000/admin  
-Default login: `admin@builditconnective.com` / `buildit2025admin`  
-**Change the admin password immediately after first login.**
+
 
 ---
 
