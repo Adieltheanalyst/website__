@@ -5,3 +5,4 @@ __pycache__/
 .env
 import_log.txt
 test_setup.py
+deletedroutes.txt

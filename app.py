@@ -326,19 +326,17 @@ def init_db():
     # Create default admin if none exists
     existing = db.execute("SELECT id FROM members WHERE role='admin'").fetchone()
     if not existing:
-        admin_email = os.environ.get("ADMIN_EMAIL","").strip().lower()
-        admin_pw = os.environ.get("ADMIN_PASSWORD","")
+        admin_email = os.environ.get("ADMIN_EMAIL", "").strip().lower()
+        admin_pw    = os.environ.get("ADMIN_PASSWORD", "").strip()
         if not admin_email or not admin_pw:
             print("No admin created: set ADMIN_EMAIL and ADMIN_PASSWORD, then redeploy.")
         else:
-        # pw = hash_password("buildit2025admin")
             db.execute("""
                 INSERT INTO members (name, email, password, role, status, approved_at)
                 VALUES (?, ?, ?, 'admin', 'active', datetime('now'))
-            """, ("Admin", "admin@builditconnective.com", admin_pw))
+            """, ("Admin", admin_email, hash_password(admin_pw)))
             db.commit()
-        print(f"✅ Admin Created:{admin_email}")
-        # print("   ⚠️  Change this password after first login!")
+            print(f"Admin created: {admin_email}")
     db.close()
 
 
@@ -694,71 +692,9 @@ def register():
 
 SHEETS_SECRET = os.environ.get("SHEETS_WEBHOOK_SECRET", "buildit-sheets-secret-change-me")
 
-@app.route("/api/form-submission", methods=["POST"])
-def form_submission():
-    """
-    Called by Google Apps Script when a new Google Form response arrives.
-    Expects JSON: { "secret": "...", "name": "...", "email": "...", "phone": "...", "about": "..." }
-    """
-    data = request.get_json(silent=True)
-
-    if not webhook_ok(data):
-        return jsonify({"ok": False, "error": "Unauthorized"}), 401
-    
-    # Verify secret token
-    if data.get("secret") != SHEETS_SECRET:
-        return jsonify({"ok": False, "error": "Unauthorized"}), 401
-
-    name  = (data.get("name")  or "").strip()
-    email = (data.get("email") or "").strip().lower()
-    phone = (data.get("phone") or "").strip()
-    about = (data.get("about") or "").strip()   # "Tell us about yourself" field
-
-    if not name or not email:
-        return jsonify({"ok": False, "error": "Name and email are required"}), 400
-
-    # Build notes from extra fields
-    notes_parts = []
-    if phone: notes_parts.append(f"Phone: {phone}")
-    if about: notes_parts.append(f"About: {about}")
-    notes = " | ".join(notes_parts) if notes_parts else "Via Google Form"
-
-    db = get_db()
-
-    # Check if already exists
-    existing = db.execute("SELECT * FROM members WHERE email=?", (email,)).fetchone()
-    if existing:
-        return jsonify({
-            "ok": True,
-            "message": f"Email {email} already exists (status: {existing['status']})"
-        }), 200
-
-    # Insert as pending
-    db.execute("""
-        INSERT INTO members (name, email, password, status, notes)
-        VALUES (?, ?, ?, 'pending', ?)
-    """, (name, email, hash_password(secrets.token_urlsafe(16)), notes))
-    db.commit()
-
-    print(f"[FORM SYNC] New application from {name} <{email}>")
-    return jsonify({"ok": True, "message": f"Member {name} added as pending"}), 201
 
 
-@app.route("/api/sync-status", methods=["GET"])
-def sync_status():
-    """Quick health check — visit this URL to confirm your webhook is reachable."""
-    secret = request.args.get("secret", "")
-    if secret != SHEETS_SECRET:
-        return jsonify({"ok": False, "error": "Unauthorized"}), 401
-    db = get_db()
-    counts = db.execute("""
-        SELECT status, COUNT(*) as n FROM members GROUP BY status
-    """).fetchall()
-    return jsonify({
-        "ok": True,
-        "status": "BuildIT Connective API is running",
-        "members": {row["status"]: row["n"] for row in counts}
-    })
+
 
 
 # ══════════════════════════════════════════════
@@ -775,7 +711,7 @@ def sheets_webhook():
     data = request.get_json(silent=True)
 
     # ── 1. Validate secret ──────────────────────────────────────────
-    if not data or data.get("secret") != WEBHOOK_SECRET:
+    if not webhook_ok(data):
         return jsonify({"ok": False, "error": "Unauthorized"}), 401
 
     # ── 2. Extract fields ───────────────────────────────────────────
@@ -834,7 +770,7 @@ def sheets_webhook():
         "ok":      True,
         "status":  "created",
         "emailed": bool(emailed),
-        "message": f"{name} added" + (" and emailed" if emailed else "but the email FAILED"),
+        "message": f"{name} added" + (" and emailed" if emailed else " but the email FAILED"),
     }), 201
 
 
@@ -866,7 +802,7 @@ def api_status():
 
 MAX_AUTO_REMOVE = int(os.environ.get("MAX_AUTO_REMOVE","4"))
 
-@app.route("/api/delete-number", methods=["POSTS"])
+@app.route("/api/delete-member", methods=["POST"])
 def api_delete_member():
     """Immediate removal of one member (the 'Remove Member' checkbox)."""
     data = request.get_json(silent=True)
@@ -899,17 +835,14 @@ def api_sync_members():
         return jsonify({"ok": False, "error": "Unauthorized"}), 401
 
     raw = data.get("emails")
-    if not isinstance(raw,list):
-        return jsonify({"ok": False, "error": "emails must be a list"}),400
-
-    sheet_emails={str(e).strip().lower() for e in raw if e}
-    if not sheet_emails:
+    if not isinstance(raw, list):
         return jsonify({"ok": False, "error": "emails must be a list"}), 400
+
     sheet_emails = {str(e).strip().lower() for e in raw if e}
     if not sheet_emails:
-        return jsonify({"ok": False, "aborted":True,
-                        "error": "sheet list was empty. Nothing removed."})
-
+        return jsonify({"ok": False, "aborted": True,
+                        "error": "Sheet list was empty. Nothing removed."})
+    
     db = get_db()
     rows = db.execute("""
         SELECT id, name, email FROM members
@@ -941,6 +874,5 @@ init_db()
 if __name__ == "__main__":
     print("\n🚀 BuildIT Connective running at http://localhost:5000")
     print("🔑 Admin panel at http://localhost:5000/admin")
-    print("   Default login: admin@builditconnective.com / buildit2025admin\n")
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
