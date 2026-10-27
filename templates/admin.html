@@ -220,7 +220,35 @@
         </table>
       </div>
     </div>
-
+    <!-- ALL MEMBERS (any status) -->
+    <div class="admin-section">
+      <h2>👥 All members ({{ all_members|length }})</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for m in all_members %}
+            <tr>
+              <td>{{ m.name }}</td>
+              <td>{{ m.email }}</td>
+              <td>{{ m.status }}</td>
+              <td>{{ m.role }}</td>
+              <td>{{ m.joined_at[:10] }}</td>
+              <td class="admin-actions">
+                {% if m.role != 'admin' %}
+                <form method="POST" action="/admin/delete/{{ m.id }}" style="display:inline;"
+                      onsubmit="return confirm('Delete {{ m.name }}? This cannot be undone.')">
+                  <button class="btn-sm danger">Delete</button>
+                </form>
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
+
 {% endblock %}
