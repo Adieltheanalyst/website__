@@ -5,10 +5,13 @@ import smtplib, os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
+import urllib
 load_dotenv()
 
 
-
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+MAIL_FROM = os.environ.get("MAIL_FROM", "")
+REPLY_TO = "communications@builditconnective.co.ke"
 ZOHO_EMAIL = os.environ.get("ZOHO_EMAIL", "")
 ZOHO_PASSWORD = os.environ.get("ZOHO_PASSWORD", "")
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:5000")
@@ -18,27 +21,32 @@ WHATSAPP_LINK = os.environ.get("WHATSAPP_LINK", "")
 SITE_NAME = "BuildIT Connective"
 
 def send_email(to_email, subject, html_body, text_body=None):
-    msg=MIMEMultipart("alternative")
-    msg["Subject"]= subject
-    msg["From"] = f"{SITE_NAME} <{ZOHO_EMAIL}>"
-    msg["To"]= to_email
-
+    if not RESEND_API_KEY or not MAIL_FROM:
+        err = "RESEND_API_KEY or MAIL_FROM not set"
+        print(f"[EMAIL] {err}")
+        return False, err
+    payload = {"from": MAIL_FROM, "to": [to_email], "subject": subject,
+               "html": html_body, "reply_to": REPLY_TO}
     if text_body:
-        msg.attach(MIMEText(text_body,"plain"))
-    msg.attach(MIMEText(html_body,"html"))
+        payload["text"] = text_body
+    req = urllib.request.Request(
+        "https://api.resend.com/emails",
+        data=json.dumps(payload).encode(),
+        headers={"Authorization": f"Bearer {RESEND_API_KEY}",
+                 "Content-Type": "application/json",
+                 "User-Agent": "buildit-site/1.0"},
+        method="POST")
     try:
-        with smtplib.SMTP_SSL("smtp.zoho.com",465, timeout=20) as server:
-            server.login(ZOHO_EMAIL,ZOHO_PASSWORD)
-            server.sendmail(ZOHO_EMAIL,to_email, msg.as_string())
-        print(f"[EMAIL] Sent to {to_email}")
-        return True, None
-    except smtplib.SMTPAuthenticationError:
-        err = "Zoho auth failed - check email/password in email_utils.py"
-        print(f"[Email] {err}")
+        with urllib.request.urlopen(req, timeout=20):
+            print(f"[EMAIL] Sent to {to_email}")
+            return True, None
+    except urllib.error.HTTPError as e:
+        err = e.read().decode()[:300]
+        print(f"[EMAIL] HTTP {e.code}: {err}")
         return False, err
     except Exception as e:
         print(f"[EMAIL] {e}")
-        return False,str(e)
+        return False, str(e)
     
 def send_welcome_email(name,email,temp_password):
     first_name=name.split()[0]
